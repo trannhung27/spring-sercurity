@@ -13,8 +13,8 @@ public class UserDetailServiceConfig {
     @Bean
     public UserDetailsService userDetailsService(BCryptPasswordEncoder bCryptPasswordEncoder) {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("user")
-                .password(bCryptPasswordEncoder.encode("userPass"))
+        manager.createUser(User.withUsername("nhung")
+                .password(bCryptPasswordEncoder.encode("nhung"))
                 .roles("USER")
                 .build());
         manager.createUser(User.withUsername("admin")

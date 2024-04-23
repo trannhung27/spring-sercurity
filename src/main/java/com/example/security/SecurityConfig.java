@@ -27,6 +27,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        System.out.println("thu");
         return new JwtAuthenticationFilter();
     }
 
@@ -36,7 +37,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry.requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
                                 .requestMatchers("/admin/**").hasAnyRole("ADMIN")
-                                .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers("/user/**").authenticated()
                                 .requestMatchers("/login/**").permitAll()
                                 .anyRequest().authenticated());
         http.addFilterBefore(jwtAuthenticationFilter(),UsernamePasswordAuthenticationFilter.class);

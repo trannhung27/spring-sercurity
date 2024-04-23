@@ -8,7 +8,7 @@ import java.util.Collections;
 public class UserService {
 
     public UserDetails loadUserById(Long userId){
-        UserDetails  userDetails = new UserDetails(1L,"nhung", Collections.singleton("USER"));
+        UserDetails  userDetails = new UserDetails(1L,"nhung", "nhung", Collections.singleton("USER"));
         return userDetails;
     }
 }
