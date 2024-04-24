@@ -3,11 +3,13 @@ package com.example.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.micrometer.common.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -24,6 +26,10 @@ public class TokenProvider {
 
     //Thời gian có hiệu lực của chuỗi jwt
     private final long JWT_EXPIRATION = 604800000L;
+
+    private static final String USER_ID_KEY = "user_id";
+
+    private static final String AUTHORITIES_KEY = "auth";
 
     private final Key key;
 
@@ -42,9 +48,9 @@ public class TokenProvider {
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
         Map<String, Object> claims = new HashMap();
 
-        claims.put("auth",userDetails.getAuthorities());
+        claims.put(AUTHORITIES_KEY,userDetails.getAuthority());
         claims.put("created", Instant.now().getEpochSecond());
-        claims.put("user_id", userDetails.getId());
+        claims.put(USER_ID_KEY, userDetails.getId());
         claims.put("token_type", "USER");
         // Tạo chuỗi json web token từ id của user.
         return Jwts.builder().setClaims(claims).setSubject(userDetails.getUserName()).setExpiration(expiryDate).signWith(this.key, SignatureAlgorithm.HS512).compact();
@@ -54,7 +60,7 @@ public class TokenProvider {
     public String getUserIdFromJWT(String token) {
         Claims claims = (Claims)this.jwtParser.parseClaimsJws(token).getBody();
 
-        return String.valueOf(claims.get("user_id"));
+        return String.valueOf(claims.get(USER_ID_KEY));
     }
 
 
@@ -73,7 +79,7 @@ public class TokenProvider {
         return false;
     }
 
-    public Authentication getAuthentication(String token){
+    public Authentication getAuthentication(String token) throws HandledException {
         try {
             Claims claims = jwtParser.parseClaimsJws(token).getBody();
             Collection<? extends GrantedAuthority> authorities = Arrays
@@ -82,10 +88,24 @@ public class TokenProvider {
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
 
-            IBEUser principal = new IBEUser(claims.getSubject(), "", authorities);
-
+            User principal = new User(claims.getSubject(), "", authorities);
+            AuthenticationToken authenticationToken = new AuthenticationToken(principal, "", authorities, token);
+            authenticationToken.setDetails("pre_auth");
+            String userId = String.valueOf(claims.get(USER_ID_KEY));
+            if(StringUtils.isBlank(userId)){
+                logger.info("Invalid JWT signature userId is null");
+                throw new HandledException("Invalid JWT signature userId is null");
+            }
+            authenticationToken.setUserId(Long.valueOf(userId));
+            authenticationToken.setCustomer(true);
+            if(claims.containsKey(AUTHORITIES_KEY) && StringUtils.isNotBlank(String.valueOf(claims.get(AUTHORITIES_KEY)))){
+                String jwtRoles = String.valueOf(claims.get(AUTHORITIES_KEY));
+                authenticationToken.setRoles(Arrays.asList(jwtRoles.split(",")));
+            }
+            return authenticationToken;
         } catch (Exception e){
             logger.info("Invalid JWT signature: {}", e.getMessage());
+            throw new HandledException("Invalid JWT signature");
         }
     }
 }
