@@ -48,10 +48,10 @@ public class TokenProvider {
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
         Map<String, Object> claims = new HashMap();
 
-        claims.put(AUTHORITIES_KEY,userDetails.getAuthority());
+        claims.put(AUTHORITIES_KEY,"ROLE_ADMIN");
         claims.put("created", Instant.now().getEpochSecond());
         claims.put(USER_ID_KEY, userDetails.getId());
-        claims.put("token_type", "USER");
+        claims.put("token_type", "ROLE_ADMIN");
         // Tạo chuỗi json web token từ id của user.
         return Jwts.builder().setClaims(claims).setSubject(userDetails.getUserName()).setExpiration(expiryDate).signWith(this.key, SignatureAlgorithm.HS512).compact();
     }
@@ -108,4 +108,6 @@ public class TokenProvider {
             throw new HandledException("Invalid JWT signature");
         }
     }
+
+
 }

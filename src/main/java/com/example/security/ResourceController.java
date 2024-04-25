@@ -23,7 +23,7 @@ public class ResourceController {
     public String loginEndpoint() {
 
         // Trả về jwt cho người dùng.
-        UserDetails  userDetails = new UserDetails(1L,"nhung", "nhung", Collections.singleton("USER"));
+        UserDetails  userDetails = new UserDetails(1L,"nhung", "nhung", Collections.singleton("ROLE_ADMIN"));
         String jwt = tokenProvider.generateToken(userDetails);
         System.out.println(jwt);
         return jwt;

@@ -34,9 +34,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry.requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
-                                .requestMatchers("/admin/**").hasAnyRole("ADMIN")
-                                .requestMatchers("/user/**").authenticated()
+                        authorizationManagerRequestMatcherRegistry.requestMatchers(HttpMethod.DELETE).hasAuthority("ROLE_ADMIN")
+                                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                                .requestMatchers("/user/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/login/**").permitAll()
                                 .anyRequest().authenticated());
         http.addFilterBefore(jwtAuthenticationFilter(),UsernamePasswordAuthenticationFilter.class);

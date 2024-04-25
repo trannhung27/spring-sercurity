@@ -27,7 +27,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private UserService customUserDetailsService;
 
     private String getJwtFromRequest(HttpServletRequest request) {
-        System.out.println("thu");
         String bearerToken = request.getHeader("Authorization");
         // Kiểm tra xem header Authorization có chứa thông tin jwt không
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
@@ -53,11 +52,12 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
+            filterChain.doFilter(servletRequest, servletResponse);
         } catch (Exception ex) {
             log.error("failed on set user authentication", ex);
+        }finally {
+            SecurityContextHolder.clearContext();
         }
-
-        filterChain.doFilter(servletRequest, servletResponse);
     }
 }
 

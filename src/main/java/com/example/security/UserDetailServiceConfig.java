@@ -7,26 +7,26 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
-@Configuration
-public class UserDetailServiceConfig {
-
-    @Bean
-    public UserDetailsService userDetailsService(BCryptPasswordEncoder bCryptPasswordEncoder) {
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("nhung")
-                .password(bCryptPasswordEncoder.encode("nhung"))
-                .roles("USER")
-                .build());
-        manager.createUser(User.withUsername("admin")
-                .password(bCryptPasswordEncoder.encode("adminPass"))
-                .roles("ADMIN", "USER")
-                .build());
-        return manager;
-    }
-
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-}
-
+//@Configuration
+//public class UserDetailServiceConfig {
+//
+//    @Bean
+//    public UserDetailsService userDetailsService(BCryptPasswordEncoder bCryptPasswordEncoder) {
+//        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+//        manager.createUser(User.withUsername("nhung")
+//                .password(bCryptPasswordEncoder.encode("nhung"))
+//                .roles("USER")
+//                .build());
+//        manager.createUser(User.withUsername("admin")
+//                .password(bCryptPasswordEncoder.encode("adminPass"))
+//                .roles("ADMIN", "USER")
+//                .build());
+//        return manager;
+//    }
+//
+//    @Bean
+//    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
+//}
+//
